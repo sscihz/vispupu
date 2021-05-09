@@ -3,11 +3,14 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from matplotlib.collections import LineCollection
 import re
 from . import colors
 
+color_styles = colors.color_styles
+plt.style.use('fivethirtyeight')
 def _bin_data(data, yname, xname, bins=50, agg_fn=np.mean):
-    data.dropna(inplace=True)
+    data = data.dropna()
     hist, edges = np.histogram(data[xname], bins=bins)
     bin_midpoint = np.zeros(edges.shape[0]-1)
     binned_df = pd.DataFrame(np.zeros((edges.shape[0]-1, 1)))
@@ -28,7 +31,7 @@ def _bin_data(data, yname, xname, bins=50, agg_fn=np.mean):
     return binned_df
 
 ##TODO: Add some Prof. XU's interflex and fect estimation and plot functions
-class regview:
+class _regview(object):
     """
     panelview:
     extract data
@@ -40,6 +43,8 @@ class regview:
     def __init__(self,data,outcome=None,key=None,treatment =None, controls=None,effect=None,
         entity_effects=False,
         TimeEffects=False,
+        bins =None,
+        th = None,
         main = None
         ):
         if effect:
@@ -55,6 +60,8 @@ class regview:
         self.effect = effect
         self.data = data
         self.main = main
+        self.th =th
+        self.bins =bins
    
         
     #heatmap        
@@ -133,7 +140,7 @@ class regview:
             xy = np.array([x, y]).T.reshape(-1, 1, 2)
             segments = np.hstack([xy[:-1], xy[1:]])
             # make line collection
-            lc = LineCollection(segments, linewidths=lwidths, color=color)
+            lc = LineCollection(segments, linewidths=2, color=color)
             return(lc)
         
         def _grey_line(d,cate,y,t,c="#CCD1D1"):
@@ -143,7 +150,7 @@ class regview:
             xy = np.array([x, y]).T.reshape(-1, 1, 2)
             segments = np.hstack([xy[:-1], xy[1:]])
             # make line collection
-            lc = LineCollection(segments, linewidths=lwidths, color=c)
+            lc = LineCollection(segments, linewidths=2, color=c)
             return(lc)
 
         ## categories with treatment 
@@ -185,9 +192,10 @@ class regview:
             data = _bin_data(self.data, self.outcome, self.key,bins=bins)
         else:
             data = self.data
+            data = data.dropna()
         colors = []
         for i in range(len(data)):
-            if data[self.key].iloc[i] >= self.th:
+            if data[self.key].iloc[i] > self.th:
                 colors.append("#F5B7B1")
             else:
                 colors.append("#AED6F1")
@@ -234,15 +242,9 @@ def keyvarview(data,keyvar,main=None):
             ax.set_title(main)
 
 def panelviewtreat(data,outcome=None,key=None,treatment =None, controls=None,effect=None,
-        bins = None, th = None,
-        entity_effects=False,
-        TimeEffects=False,
         main = None):
-    plotter = regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=controls,
-        bins = bins, th = bins,
-        entity_effects=bins,
-        TimeEffects=bins,
-        main = bins)
+    plotter = _regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=effect,
+        main = main)
 
     ax = plotter.panelviewtreat()
 
@@ -250,47 +252,31 @@ def panelviewtreat(data,outcome=None,key=None,treatment =None, controls=None,eff
     
 
 def panelviewline(data,outcome=None,key=None,treatment =None, controls=None,effect=None,
-        bins = None, th = None,
-        entity_effects=False,
-        TimeEffects=False,
         main = None):
-    plotter = regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=controls,
-        bins = bins, th = bins,
-        entity_effects=bins,
-        TimeEffects=bins,
-        main = bins)
+    plotter = _regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=effect,
+        main = main)
 
-    ax = plotter.panelviewtreat()
+    ax = plotter.panelviewline()
 
     return ax
 
 def rddview(data,outcome=None,key=None,treatment =None, controls=None,effect=None,
         bins = None, th = None,
-        entity_effects=False,
-        TimeEffects=False,
         main = None):
 
-    plotter = regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=controls,
-        bins = bins, th = bins,
-        entity_effects=bins,
-        TimeEffects=bins,
-        main = bins)
+    plotter = _regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=effect,
+        bins = bins, th = th,
+        main = main)
 
     ax = plotter.rddview()
 
     return ax
 
-def vvview(sdata,outcome=None,key=None,treatment =None, controls=None,effect=None,
+def vvview(data,outcome=None,key=None,treatment =None, controls=None,effect=None,
         bins = None, th = None,
-        entity_effects=False,
-        TimeEffects=False,
         main = None):
     
-    plotter = regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=controls,
-        bins = bins, th = bins,
-        entity_effects=bins,
-        TimeEffects=bins,
-        main = bins)
+    plotter = _regview(data = data,outcome=outcome,key=key,treatment =treatment, controls=controls,effect=effect, bins = bins, th = th, main = main)
 
     ax = plotter.vvview()
 
@@ -313,7 +299,7 @@ def missingview(data,var,groupby='obs',cmp = None, main=None, edgecolors='k', li
         cmap = mpl.colors.ListedColormap(['#F92802','#FFDA64'])###pupu color
 
     else: 
-        ma = np.asarray([countna(data,groupby,i) for i in var])
+        ma = np.asarray([_countna(data,groupby,i) for i in var])
         cmap = mpl.colors.ListedColormap(list(reversed(color_styles['Asbestos'])))
     x = np.arange(ma.shape[1] + 1)
     y = np.arange(ma.shape[0] + 1)
