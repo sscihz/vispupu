@@ -9,6 +9,7 @@ from . import colors
 
 color_styles = colors.color_styles
 plt.style.use('fivethirtyeight')
+
 def _bin_data(data, yname, xname, bins=50, agg_fn=np.mean):
     data = data.dropna()
     hist, edges = np.histogram(data[xname], bins=bins)
@@ -307,6 +308,7 @@ def missingview(data,var,groupby='obs',cmp = None, main=None, edgecolors='k', li
     if cmp:
         cmap = mpl.colors.ListedColormap(cmp)
     
+
     ##plot
     fig, ax = plt.subplots(figsize=(16,9),dpi=400)
     if groupby == "obs":
@@ -314,7 +316,7 @@ def missingview(data,var,groupby='obs',cmp = None, main=None, edgecolors='k', li
         ax.hlines(np.arange(ma.shape[0]), xmin=0, xmax=ma.shape[1],linestyles='-', alpha=0.4,lw=2)
         fig.colorbar(im, ax=ax,ticks = [0,1])    ##set legends
     else: 
-        im = ax.pcolor(x, y, ma, vmin=ma.min(), vmax=ma.max(),cmap=cmap,edgecolors=edgecolors, linewidths=linewidths)
+        im = ax.pcolor(x, y, ma, vmin=ma.min(), vmax=ma.max(),cmap=cmap)
         fig.colorbar(im, ax=ax)
 
     ##set main
