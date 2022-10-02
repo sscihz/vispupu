@@ -3,7 +3,7 @@
 ## 项目简介
 写这个项目是因为隔离玩游戏玩到了圣人模式，不想学习，又玩不下去了。
 
-灵感来源于徐老师文章：[A Basic Checklist for Observational Studies in Political Science](http://yiqingxu.org/public/checklist.pdf)。目前，越来越多的社会科学学者开始把Python作为自己分析工具，但这些主要是用于机器学习相关的工作，而社科传统手艺，解释与推断还是大量依赖R。因此，对于社科学者而言，无论是数据探索，还是数据分析的包都不是很完善（有一说一，Seaborn的封装其实很不错），于是本社科混子试着写了自己第一个包vispupu，希望可以让社科学者用python多少更顺手一点。  
+灵感来源于徐老师文章：[A Basic Checklist for Observational Studies in Political Science](http://yiqingxu.org/public/checklist.pdf)。目前，越来越多的社会科学学者开始把Python作为自己分析工具，但这些主要是用于机器学习相关的工作，而社科传统手艺，解释与推断还是大量依赖R。因此，对于社科学者而言，无论是数据探索，还是数据分析的包都不是很完善（有一说一，Seaborn的封装其实很不错），于是本社科混子试着写了自己第一个包vispupu，希望可以让社科学者用python多少更顺手一点（额，其实也就是瞎写写，不然不会两年不动了）。  
 
 画图工作由matplotlib完成，但是目前版本非常简陋，如果想要修改可以使用matplotlib自定义。
   
@@ -20,6 +20,7 @@
 - **didview**:If you use difference-in-differences design (or use a twoway fixed effects model), draw a dynamic treatment effect plot.
 - - **interview**: If you model includes an interaction term, check whether the linearity assumption looks plausible.（
 - **ivview**: If you use an instrumental variable (IV) design, compare your IV estimates with your OLS estimates. A big discrepancy is suspicious (if your primary concern for the OLS is upward bias) and needs explanation. When your instrument, treatment, and outcome variables are continuous, plotting both the first-stage and the reduced form relationships will be helpful.
+- 下一步计划是做一些主题模型的封装
 
 
 
